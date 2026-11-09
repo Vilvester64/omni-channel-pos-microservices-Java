@@ -25,7 +25,7 @@ export const LoginPage: React.FC = () => {
       await login(username, password);
       navigate('/');
     } catch (err: any) {
-      const msg = err.response?.data?.message || 'Authentication failed. Please verify credentials.';
+      const msg = err.response?.data?.message || err.message || 'Authentication failed. Please verify credentials.';
       setError(msg);
     } finally {
       setLoading(false);

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 
 export const API_BASE_URL = 'http://localhost:8080';
 
@@ -11,20 +11,20 @@ export const apiClient = axios.create({
 
 // Request Interceptor: Attach JWT Bearer Token
 apiClient.interceptors.request.use(
-  (config) => {
+  (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem('pos_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error: AxiosError) => Promise.reject(error)
 );
 
 // Response Interceptor: Handle 401 Unauthorized
 apiClient.interceptors.response.use(
-  (response) => response,
-  (error) => {
+  (response: AxiosResponse) => response,
+  (error: AxiosError) => {
     if (error.response && error.response.status === 401) {
       localStorage.removeItem('pos_token');
       localStorage.removeItem('pos_user');
@@ -35,3 +35,4 @@ apiClient.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+

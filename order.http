@@ -1,0 +1,29 @@
+### Variables
+@baseUrl = http://localhost:8083
+@gatewayUrl = http://localhost:8080
+
+### 1. Create Order (Triggers Saga -> order-created-topic)
+POST {{baseUrl}}/api/order/orders
+Content-Type: application/json
+X-User-ID: CASHIER-01
+X-User-Role: ROLE_CASHIER
+
+{
+  "discountAmount": 500000,
+  "items": [
+    {
+      "sku": "LAPTOP-MBP-14",
+      "productName": "MacBook Pro",
+      "quantity": 1,
+      "price": 25000000
+    }
+  ]
+}
+
+### 2. Get All Orders
+GET {{baseUrl}}/api/order/orders
+Accept: application/json
+
+### 3. Get Order by ID
+GET {{baseUrl}}/api/order/orders/1
+Accept: application/json

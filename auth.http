@@ -1,0 +1,63 @@
+### Variables
+@baseUrl = http://localhost:8084
+@gatewayUrl = http://localhost:8080
+
+### 1. Login as Admin (Returns JWT with ROLE_ADMIN)
+# @name adminLogin
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+### Store Token
+@adminToken = {{adminLogin.response.body.data.token}}
+
+### 2. Login as Cashier (Returns JWT with ROLE_CASHIER)
+# @name cashierLogin
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "cashier",
+  "password": "cashier123"
+}
+
+### Store Cashier Token
+@cashierToken = {{cashierLogin.response.body.data.token}}
+
+### 3. Validate Token
+GET {{baseUrl}}/api/auth/validate
+Authorization: Bearer {{adminToken}}
+
+### 4. Test Invalid Credentials
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "wrongpassword"
+}
+
+### =======================================================
+### Testing through API Gateway (Port 8080)
+### =======================================================
+
+### 5. Login via Gateway
+POST {{gatewayUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+### 6. Access Catalog (Protected by Gateway JWT validation)
+GET {{gatewayUrl}}/api/catalog/products
+Authorization: Bearer {{adminToken}}
+
+### 7. Access Catalog WITHOUT Token (Must return 401 UNAUTHORIZED)
+GET {{gatewayUrl}}/api/catalog/products
+Accept: application/json

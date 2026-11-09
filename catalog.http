@@ -1,0 +1,58 @@
+### Variables
+@baseUrl = http://localhost:8081
+@gatewayUrl = http://localhost:8080
+
+### 1. Create Product (Sample: MacBook Pro)
+POST {{baseUrl}}/api/catalog/products
+Content-Type: application/json
+X-User-Role: ROLE_ADMIN
+
+{
+  "sku": "LAPTOP-MBP-14",
+  "name": "MacBook Pro",
+  "description": "Apple M3 Pro 14-inch, 18GB RAM, 512GB SSD Space Black",
+  "price": 25000000,
+  "category": "Electronics"
+}
+
+### 2. Get All Products
+GET {{baseUrl}}/api/catalog/products
+Accept: application/json
+
+### 3. Get Products by Category
+GET {{baseUrl}}/api/catalog/products?category=Electronics
+Accept: application/json
+
+### 4. Get Product by ID
+GET {{baseUrl}}/api/catalog/products/1
+Accept: application/json
+
+### 5. Get Product by SKU
+GET {{baseUrl}}/api/catalog/products/sku/LAPTOP-MBP-14
+Accept: application/json
+
+### 6. Update Product (Update Price / Description)
+PUT {{baseUrl}}/api/catalog/products/1
+Content-Type: application/json
+X-User-Role: ROLE_ADMIN
+
+{
+  "sku": "LAPTOP-MBP-14",
+  "name": "MacBook Pro 14",
+  "description": "Apple M3 Pro 14-inch, 18GB RAM, 512GB SSD - Updated Promo",
+  "price": 24500000,
+  "category": "Electronics"
+}
+
+### 7. Delete Product by ID
+DELETE {{baseUrl}}/api/catalog/products/1
+X-User-Role: ROLE_ADMIN
+Accept: application/json
+
+### =======================================================
+### Optional: Testing via API Gateway (Requires Gateway & Eureka running)
+### =======================================================
+
+### 8. Get All Products via Gateway
+GET {{gatewayUrl}}/api/catalog/products
+Accept: application/json

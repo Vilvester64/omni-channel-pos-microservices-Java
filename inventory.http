@@ -1,0 +1,46 @@
+### Variables
+@baseUrl = http://localhost:8082
+@gatewayUrl = http://localhost:8080
+
+### 1. Initialize / Set Stock for MacBook Pro
+POST {{baseUrl}}/api/inventory/stocks
+Content-Type: application/json
+X-User-Role: ROLE_ADMIN
+
+{
+  "sku": "LAPTOP-MBP-14",
+  "branchCode": "MAIN",
+  "quantity": 50
+}
+
+### 2. Get All Stock
+GET {{baseUrl}}/api/inventory/stocks
+Accept: application/json
+
+### 3. Get Stock by SKU
+GET {{baseUrl}}/api/inventory/stocks/LAPTOP-MBP-14?branchCode=MAIN
+Accept: application/json
+
+### 4. Manually Add Stock (Restock)
+POST {{baseUrl}}/api/inventory/stocks/add
+Content-Type: application/json
+X-User-Role: ROLE_ADMIN
+
+{
+  "sku": "LAPTOP-MBP-14",
+  "branchCode": "MAIN",
+  "quantity": 10,
+  "reason": "New supplier delivery"
+}
+
+### 5. Manually Deduct Stock
+POST {{baseUrl}}/api/inventory/stocks/deduct
+Content-Type: application/json
+X-User-Role: ROLE_ADMIN
+
+{
+  "sku": "LAPTOP-MBP-14",
+  "branchCode": "MAIN",
+  "quantity": 2,
+  "reason": "Manual stock adjustment"
+}

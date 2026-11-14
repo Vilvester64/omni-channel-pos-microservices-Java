@@ -35,6 +35,7 @@ build/
 *.log
 .DS_Store
 Thumbs.db
+run-*.bat
 
 ### Internal Documentation ###
 docs/

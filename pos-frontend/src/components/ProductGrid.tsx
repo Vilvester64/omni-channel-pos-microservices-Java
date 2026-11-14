@@ -7,9 +7,10 @@ interface ProductGridProps {
   loading: boolean;
   cart: CartItem[];
   onAddToCart: (p: Product) => void;
+  stockMap?: Record<string, number> | null;
 }
 
-export const ProductGrid: React.FC<ProductGridProps> = ({ products, loading, cart, onAddToCart }) => {
+export const ProductGrid: React.FC<ProductGridProps> = ({ products, loading, cart, onAddToCart, stockMap }) => {
   const formatIDR = (val: number) =>
     new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
 
@@ -37,6 +38,12 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, loading, car
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       {products.map((p) => {
         const inCart = cart.find((item) => item.product.id === p.id);
+        const hasStockRecord = stockMap !== undefined && stockMap !== null && p.sku in stockMap;
+        const availableStock = hasStockRecord ? stockMap![p.sku] : undefined;
+        const outOfStock = hasStockRecord && availableStock! <= 0;
+        const currentQtyInCart = inCart?.quantity ?? 0;
+        const reachedLimit = hasStockRecord && currentQtyInCart >= availableStock!;
+
         return (
           <div
             key={p.id}
@@ -47,9 +54,26 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, loading, car
                 <span className="text-[10px] font-mono font-medium px-2 py-0.5 bg-slate-800 text-slate-300 rounded border border-slate-700/50">
                   {p.sku}
                 </span>
-                <span className="text-[10px] text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full font-medium">
-                  {p.category}
-                </span>
+                <div className="flex items-center gap-1.5">
+                  {hasStockRecord ? (
+                    <span
+                      className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                        availableStock! > 0
+                          ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                          : 'bg-red-500/10 text-red-400 border border-red-500/20'
+                      }`}
+                    >
+                      Stock: {availableStock}
+                    </span>
+                  ) : (
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-slate-500">
+                      No stock
+                    </span>
+                  )}
+                  <span className="text-[10px] text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full font-medium">
+                    {p.category}
+                  </span>
+                </div>
               </div>
               <h3 className="font-semibold text-white text-sm line-clamp-1 group-hover:text-blue-400 transition">
                 {p.name}
@@ -67,14 +91,23 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, loading, car
 
               <button
                 onClick={() => onAddToCart(p)}
+                disabled={outOfStock || reachedLimit}
                 className={`py-1.5 px-3 rounded-xl text-xs font-medium flex items-center gap-1.5 transition ${
-                  inCart
+                  outOfStock || reachedLimit
+                    ? 'bg-slate-800 text-slate-600 cursor-not-allowed border border-slate-800'
+                    : inCart
                     ? 'bg-emerald-600/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-600/30'
                     : 'bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-600/20'
                 }`}
               >
                 <Plus className="w-3.5 h-3.5" />
-                {inCart ? `Added (${inCart.quantity})` : 'Add'}
+                {outOfStock
+                  ? 'Out of Stock'
+                  : reachedLimit
+                  ? 'Max in Cart'
+                  : inCart
+                  ? `Added (${inCart.quantity})`
+                  : 'Add'}
               </button>
             </div>
           </div>

@@ -1,13 +1,17 @@
 import React from 'react';
-import { ShoppingBag, LogOut } from 'lucide-react';
+import { ShoppingBag, LogOut, Boxes, PackagePlus } from 'lucide-react';
 import { User } from '../types';
 
 interface PosHeaderProps {
   user: User | null;
   onLogout: () => void;
+  onOpenStockManager?: () => void;
+  onOpenAddProduct?: () => void;
 }
 
-export const PosHeader: React.FC<PosHeaderProps> = ({ user, onLogout }) => {
+export const PosHeader: React.FC<PosHeaderProps> = ({ user, onLogout, onOpenStockManager, onOpenAddProduct }) => {
+  const isAdmin = user?.roles?.includes('ROLE_ADMIN');
+
   return (
     <header className="h-16 border-b border-slate-800 bg-slate-900/60 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-30">
       <div className="flex items-center gap-3">
@@ -25,7 +29,26 @@ export const PosHeader: React.FC<PosHeaderProps> = ({ user, onLogout }) => {
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
+        {isAdmin && (
+          <div className="flex items-center gap-2 mr-2">
+            <button
+              onClick={onOpenAddProduct}
+              className="py-1.5 px-3 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 rounded-xl text-xs font-medium flex items-center gap-1.5 transition"
+            >
+              <PackagePlus className="w-3.5 h-3.5" />
+              <span>Add Product</span>
+            </button>
+            <button
+              onClick={onOpenStockManager}
+              className="py-1.5 px-3 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/40 rounded-xl text-xs font-medium flex items-center gap-1.5 transition"
+            >
+              <Boxes className="w-3.5 h-3.5" />
+              <span>Manage Stock</span>
+            </button>
+          </div>
+        )}
+
         <div className="hidden md:flex items-center gap-2 text-xs text-slate-400 bg-slate-950/60 border border-slate-800 py-1.5 px-3 rounded-full">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           <span>Eureka & Kafka Active</span>
@@ -48,3 +71,4 @@ export const PosHeader: React.FC<PosHeaderProps> = ({ user, onLogout }) => {
     </header>
   );
 };
+

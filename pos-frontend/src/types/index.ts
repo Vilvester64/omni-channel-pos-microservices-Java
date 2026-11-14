@@ -62,3 +62,13 @@ export interface OrderResponse {
   createdAt: string;
   items: OrderItemResponse[];
 }
+
+export interface StockItem {
+  id: number;
+  sku: string;
+  branchCode: string;
+  quantity: number;
+  version: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
